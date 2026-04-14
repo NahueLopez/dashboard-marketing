@@ -106,12 +106,22 @@ function App() {
 
   const updateField = (f: keyof AuthForm, v: string) => setForm(c => ({ ...c, [f]: v }))
 
+  const handleLogout = async () => {
+    try {
+      await apiFetch('/api/auth/logout', { method: 'POST' })
+    } catch (e) {
+      console.error('Logout error', e)
+    } finally {
+      setUser(null)
+    }
+  }
+
   if (bootstrapping) return <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-zinc-950 text-slate-800 dark:text-zinc-200">Cargando Naverys...</div>
 
   // Private Routes Protection Implementation Built-in
   if (user) {
     return (
-      <DashboardLayout>
+      <DashboardLayout handleLogout={handleLogout}>
         <Routes>
           <Route path="/" element={<OverviewPage />} />
           <Route path="/metrics" element={<WebMetricsPage />} />

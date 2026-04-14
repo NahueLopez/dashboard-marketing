@@ -12,6 +12,35 @@ use Exception;
 class GoogleAnalyticsService
 {
     private const BASE_URL = 'https://analyticsdata.googleapis.com/v1beta';
+    private const ADMIN_API_URL = 'https://analyticsadmin.googleapis.com/v1beta';
+
+    public function getFirstPropertyId(ConnectedAccount $account): ?string
+    {
+        $response = Http::withToken($account->access_token)
+            ->get(self::ADMIN_API_URL . '/accountSummaries');
+
+        if ($response->status() === 401) {
+            $this->refreshToken($account);
+            $response = Http::withToken($account->access_token)
+                ->get(self::ADMIN_API_URL . '/accountSummaries');
+        }
+
+        if (!$response->successful()) {
+            throw new Exception("Error al obtener properties de GA4 Admin API: " . $response->body());
+        }
+
+        $data = $response->json();
+        $summaries = $data['accountSummaries'] ?? [];
+        
+        foreach ($summaries as $summary) {
+            $properties = $summary['propertySummaries'] ?? [];
+            foreach ($properties as $property) {
+                return str_replace('properties/', '', $property['property']);
+            }
+        }
+
+        return null;
+    }
 
     public function getVisitsAndSessions(ConnectedAccount $account, string $propertyId, string $startDate = '30daysAgo', string $endDate = 'today'): array
     {
@@ -34,6 +63,25 @@ class GoogleAnalyticsService
         return $response->json();
     }
 
+    public function getWeeklyTimeline(ConnectedAccount $account, string $propertyId): array
+    {
+        $startDate = '6daysAgo'; // Incluye hoy (7 días en total)
+        $endDate = 'today';
+
+        $response = $this->makeTimelineRequest($account, $propertyId, $startDate, $endDate);
+
+        if ($response->status() === 401) {
+            $this->refreshToken($account);
+            $response = $this->makeTimelineRequest($account, $propertyId, $startDate, $endDate);
+        }
+
+        if (!$response->successful()) {
+            throw new Exception("Error al obtener timeline de Google Analytics: " . $response->body());
+        }
+
+        return $response->json();
+    }
+
     private function makeRequest(ConnectedAccount $account, string $propertyId, string $startDate, string $endDate)
     {
         // Petición nativa a la Data API de GA4 usando Http Client
@@ -41,6 +89,25 @@ class GoogleAnalyticsService
             ->post(self::BASE_URL . "/properties/{$propertyId}:runReport", [
                 'dateRanges' => [
                     ['startDate' => $startDate, 'endDate' => $endDate],
+                ],
+                'metrics' => [
+                    ['name' => 'sessions'],
+                    ['name' => 'totalUsers'],
+                    ['name' => 'newUsers'],
+                    ['name' => 'screenPageViews'],
+                ],
+            ]);
+    }
+
+    private function makeTimelineRequest(ConnectedAccount $account, string $propertyId, string $startDate, string $endDate)
+    {
+        return Http::withToken($account->access_token)
+            ->post(self::BASE_URL . "/properties/{$propertyId}:runReport", [
+                'dateRanges' => [
+                    ['startDate' => $startDate, 'endDate' => $endDate],
+                ],
+                'dimensions' => [
+                    ['name' => 'date'],
                 ],
                 'metrics' => [
                     ['name' => 'sessions'],

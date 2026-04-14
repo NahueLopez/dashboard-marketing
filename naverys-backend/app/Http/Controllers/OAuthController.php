@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\OAuth\GetOAuthRedirectAction;
 use App\Actions\OAuth\GetUserConnectedAccountsAction;
+use App\Actions\OAuth\HandleOAuthCallbackAction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -31,7 +32,7 @@ class OAuthController extends Controller
             return response()->json(['error' => 'Provider no soportado.'], 400);
         }
 
-        $url = $this->getOAuthRedirectAction->execute($provider);
+        $url = $this->getOAuthRedirectAction->execute($provider, auth()->id());
         
         return response()->json([
             'url' => $url,
@@ -46,15 +47,13 @@ class OAuthController extends Controller
             return redirect($frontendUrl . '?oauth=error');
         }
 
-        if (auth()->guest()) {
-            Log::error("OAuth callback from $provider received, but user is unauthenticated from Sanctum Session perspective.");
-            return redirect($frontendUrl . '?oauth=unauthenticated');
-        }
+        Log::info("OAuth Callback Request Params:", request()->all());
 
         try {
-            $this->handleOAuthCallbackAction->execute($provider);
+            $this->handleOAuthCallbackAction->execute($provider, request()->input('state'));
             return redirect($frontendUrl . '?oauth=success');
         } catch (Throwable $e) {
+            Log::error("OAuth Callback failed: " . $e->getMessage());
             return redirect($frontendUrl . '?oauth=fail');
         }
     }

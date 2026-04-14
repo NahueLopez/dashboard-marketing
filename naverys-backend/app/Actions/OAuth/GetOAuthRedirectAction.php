@@ -8,9 +8,24 @@ use Laravel\Socialite\Facades\Socialite;
 
 class GetOAuthRedirectAction
 {
-    public function execute(string $provider): string
+    public function execute(string $provider, int $userId): string
     {
         $driver = $provider === 'meta' ? 'facebook' : $provider;
-        return Socialite::driver($driver)->stateless()->redirect()->getTargetUrl();
+        $state = encrypt((string) $userId);
+
+        $socialite = Socialite::driver($driver);
+
+        if ($provider === 'google') {
+            $socialite->scopes([
+                'https://www.googleapis.com/auth/analytics.readonly',
+                'https://www.googleapis.com/auth/analytics',
+            ]);
+        }
+
+        return $socialite
+            ->stateless()
+            ->with(['state' => $state, 'access_type' => 'offline', 'prompt' => 'consent'])
+            ->redirect()
+            ->getTargetUrl();
     }
 }

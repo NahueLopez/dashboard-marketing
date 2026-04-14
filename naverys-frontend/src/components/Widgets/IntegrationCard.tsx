@@ -47,14 +47,13 @@ export function IntegrationCard({ provider, description, status, icon, onConnect
             </div>
 
             <button
-                onClick={isConnected ? undefined : onConnect}
-                disabled={isConnected}
+                onClick={onConnect}
                 className={`w-full py-2.5 rounded-lg font-medium flex items-center justify-center gap-2 transition-all ${isConnected
-                        ? 'bg-slate-100 dark:bg-zinc-900/50 text-slate-400 dark:text-zinc-600 cursor-default'
+                        ? 'bg-slate-100 dark:bg-zinc-900 text-blue-600 dark:text-blue-400 hover:bg-slate-200 dark:hover:bg-zinc-800'
                         : 'bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 shadow-sm'
                     }`}
             >
-                {isConnected ? 'Sincronizado' : 'Vincular Cuenta'}
+                {isConnected ? 'Renovar Permisos (Reconectar)' : 'Vincular Cuenta'}
                 {!isConnected && <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />}
             </button>
         </div>

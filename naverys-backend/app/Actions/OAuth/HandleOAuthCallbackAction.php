@@ -11,28 +11,42 @@ use Throwable;
 
 class HandleOAuthCallbackAction
 {
-    public function execute(string $provider): void
+    public function execute(string $provider, ?string $state): void
     {
         try {
+            if (!$state) {
+                throw new \Exception("Missing state parameter in OAuth callback.");
+            }
+
+            $userId = (int) decrypt($state);
+
+            if (!$userId) {
+                throw new \Exception("Invalid state payload in OAuth callback.");
+            }
+
             $driver = $provider === 'meta' ? 'facebook' : $provider;
             $socialUser = Socialite::driver($driver)->stateless()->user();
 
+            $dataToUpdate = [
+                'access_token' => $socialUser->token,
+            ];
+
+            if (!empty($socialUser->refreshToken)) {
+                $dataToUpdate['refresh_token'] = $socialUser->refreshToken;
+            }
+
+            Log::info("Saving new Google Access Token. Refresh Token present? " . (empty($socialUser->refreshToken) ? 'No' : 'Yes'));
+
             ConnectedAccount::updateOrCreate(
                 [
-                    'user_id' => auth()->id(),
-                    'provider' => $provider, // Retenemos 'meta' u 'google' en DB
-                    'provider_id' => $socialUser->getId(),
+                    'user_id' => $userId,
+                    'provider' => $provider,
                 ],
-                [
-                    'access_token' => $socialUser->token,
-                    'refresh_token' => $socialUser->refreshToken,
-                ]
+                $dataToUpdate
             );
         } catch (Throwable $e) {
-            Log::error("Failed to handle OAuth callback for $provider: " . $e->getMessage(), [
-                'exception' => $e,
-            ]);
-            throw clone $e;
+            Log::error("Failed to handle OAuth callback for $provider: " . $e->getMessage());
+            throw $e;
         }
     }
 }

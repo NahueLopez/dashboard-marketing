@@ -12,7 +12,7 @@ class GetUserConnectedAccountsAction
     public function execute($user): array
     {
         try {
-            $providers = $user->connectedAccounts()->pluck('provider_name')->toArray();
+            $providers = $user->connectedAccounts()->pluck('provider')->toArray();
             
             return [
                 'success' => true,

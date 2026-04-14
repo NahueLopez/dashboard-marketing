@@ -30,10 +30,10 @@ SaaS de analítica B2B orientado a clientes de la agencia Naverys. El objetivo e
 * `metrics_cache`: id, user_id (FK), provider (ENUM: 'google', 'meta'), metric_key (string), metric_value (text/json), recorded_at (date), timestamps.
 
 ## 5. Roadmap Actual (Por Fases)
-- [ ] **Fase 1:** Cimientos y Autenticación (Setup Laravel/React + Sanctum). -> **[ESTADO ACTUAL]**
-- [ ] **Fase 2:** Conectividad OAuth (Socialite + Tablas de conexión).
+- [x] **Fase 1:** Cimientos y Autenticación (Setup Laravel/React + Sanctum). ✅ **[FINALIZADA]**
+- [ ] **Fase 2:** Conectividad OAuth (Socialite + Tablas de conexión). -> **[ESTADO ACTUAL]** (Backend y tablas creadas, a la espera de credenciales y front).
 - [ ] **Fase 3:** Workers y APIs (Traer datos de Google/Meta).
-- [ ] **Fase 4:** Frontend y Gráficos (Dashboard UI). 🚧 **[BLOQUEADO: Requiere boceto Figma finalizado de UI/UX]**
+- [ ] **Fase 4:** Frontend y Gráficos (Dashboard UI). 🚧 **[EN PROGRESO: Interfaces base (Layout/Pages) creadas, falta integrar gráficos]**
 - [ ] **Fase 5:** Pulido y Deploy en Hostinger.
 
 ## 6. Candados Anti-Alucinaciones (Instrucciones de Comportamiento IA)

@@ -1,0 +1,22 @@
+[
+    {
+        "id": 1,
+        "user_id": 2,
+        "provider": "google",
+        "provider_id": "100458600212876413283",
+        "access_token": "ya29.a0Aa7MYipF1-N9GR6rQzgQuaeFMRUsODQB-YP4zaMeJgAbXQDBmhHbaatevIdsnhMyJv7Jrb6CoZGjIfCgkR-kzRfBmB5cjF-EKhn2HNOczTI2NpY_pvBQZ3lyPH2qqgc6T6Bf0x7hFX29QnGmKwqA4K6AP_2XfgFhdVYFVTqgKcNVbj8KYc4axhOUmm3OZ77KwMgDc4IeaCgYKAf8SARESFQHGX2MiFC1ElZXYzmPiZgpVWfaTwA0207",
+        "refresh_token": "1\/\/0hN-O09IfaeYACgYIARAAGBESNwF-L9Ir5O1z2HdqGVmrn5YYiSdY-V69qKiX_FbkBlG9GcjcwkTDgD9CPDuApYeOgUupS9PeKe0",
+        "created_at": "2026-04-14T11:30:43.000000Z",
+        "updated_at": "2026-04-14T15:18:26.000000Z"
+    },
+    {
+        "id": 2,
+        "user_id": 2,
+        "provider": "meta",
+        "provider_id": "10242942701494681",
+        "access_token": "EAAunXteLLqMBRPQUF9lYUk5dZAjBquavpIMeSsag0NEFQaDhwjb7YYdmnnvN9Eot9okZCWehHXHAC3g9wZBmpMEFy8QZApZB23NxOVK6u58YxfTMZBLwA4U9v8j2ZCck8WVJGUEw9oXVuUo0uVyec8oZCXO1In4ezOKCcNTpGmqZChY6ZCZA1UHeYc140MZC79oV6ZCPXgq0o3qKZCFOZB90k3zDiVxa5OsWaHhi2vT3boQXtt5HLlN8WBeQVpfOBue2KfYUn537h4BVaCZAgZBDLumT5YoLeUYY3wDpynoVEVwZDZD",
+        "refresh_token": null,
+        "created_at": "2026-04-14T15:12:13.000000Z",
+        "updated_at": "2026-04-14T15:12:13.000000Z"
+    }
+]

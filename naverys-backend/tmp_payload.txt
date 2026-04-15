@@ -1,0 +1,78 @@
+{
+    "propertyName": "Ceramica Industrial Avellaneda",
+    "pagespeedTargetUrl": "https:\/\/ceramica-avellaneda.com.ar\/",
+    "sessions": 404,
+    "totalUsers": 335,
+    "newUsers": 320,
+    "pageViews": 726,
+    "timeline": [
+        {
+            "name": "Lun",
+            "sessions": 19,
+            "users": 18
+        },
+        {
+            "name": "Mie",
+            "sessions": 17,
+            "users": 16
+        },
+        {
+            "name": "Jue",
+            "sessions": 15,
+            "users": 14
+        },
+        {
+            "name": "Vie",
+            "sessions": 13,
+            "users": 12
+        },
+        {
+            "name": "Sab",
+            "sessions": 4,
+            "users": 3
+        },
+        {
+            "name": "Dom",
+            "sessions": 4,
+            "users": 4
+        },
+        {
+            "name": "Mar",
+            "sessions": 1,
+            "users": 1
+        }
+    ],
+    "pagespeed": {
+        "mobile": {
+            "performance_score": 85,
+            "accessibility_score": 86,
+            "best_practices_score": 97,
+            "seo_score": 83,
+            "lcp": "2.6 s",
+            "fcp": "1.8 s",
+            "cls": "0.05",
+            "tti": "4 s"
+        },
+        "desktop": {
+            "performance_score": 98,
+            "accessibility_score": 98,
+            "best_practices_score": 95,
+            "seo_score": 91,
+            "lcp": "1.1 s",
+            "fcp": "0.9 s",
+            "cls": "0.01",
+            "tti": "2.3 s"
+        }
+    },
+    "meta": {
+        "spend": 0,
+        "impressions": 0,
+        "clicks": 0,
+        "cpc": 0,
+        "cpm": 0,
+        "leads": 0,
+        "account_name": "Nahue Lopez"
+    },
+    "connected": true,
+    "last_updated": "2026-04-14T00:00:00.000000Z"
+}

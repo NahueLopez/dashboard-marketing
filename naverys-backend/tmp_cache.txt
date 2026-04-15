@@ -1,0 +1,32 @@
+[
+    {
+        "id": 7,
+        "user_id": 2,
+        "provider": "meta",
+        "metric_key": "meta_selected_adaccount",
+        "metric_value": "387831539213230",
+        "recorded_at": "2026-04-14T00:00:00.000000Z",
+        "created_at": "2026-04-14T15:34:04.000000Z",
+        "updated_at": "2026-04-14T15:34:04.000000Z"
+    },
+    {
+        "id": 8,
+        "user_id": 2,
+        "provider": "meta",
+        "metric_key": "meta_adaccount_name",
+        "metric_value": "Nahue Lopez",
+        "recorded_at": "2026-04-14T00:00:00.000000Z",
+        "created_at": "2026-04-14T15:34:04.000000Z",
+        "updated_at": "2026-04-14T15:34:04.000000Z"
+    },
+    {
+        "id": 9,
+        "user_id": 2,
+        "provider": "meta",
+        "metric_key": "advertising_performance",
+        "metric_value": "{\"spend\":0,\"impressions\":0,\"clicks\":0,\"cpc\":0,\"cpm\":0,\"leads\":0}",
+        "recorded_at": "2026-04-14T00:00:00.000000Z",
+        "created_at": "2026-04-14T15:34:05.000000Z",
+        "updated_at": "2026-04-14T15:34:05.000000Z"
+    }
+]

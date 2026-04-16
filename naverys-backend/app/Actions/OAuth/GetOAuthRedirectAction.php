@@ -19,6 +19,7 @@ class GetOAuthRedirectAction
             $socialite->scopes([
                 'https://www.googleapis.com/auth/analytics.readonly',
                 'https://www.googleapis.com/auth/analytics',
+                'https://www.googleapis.com/auth/webmasters.readonly',
             ]);
         } elseif ($provider === 'meta') {
             $socialite->setScopes([

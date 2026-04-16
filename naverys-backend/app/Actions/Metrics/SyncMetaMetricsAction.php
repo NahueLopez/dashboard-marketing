@@ -30,34 +30,7 @@ class SyncMetaMetricsAction
                 ->where('metric_key', 'meta_selected_adaccount')
                 ->first();
 
-            $adAccountId = null;
-
-            if (!$adAccountCache) {
-                // For MVP and demonstration purposes, we will forcefully inject the simulation block regardless of graph empty state
-                // This ensures the client immediately sees the expected visual value even if their personal account is un-billed
-                MetricsCache::updateOrCreate(
-                    ['user_id' => $user->id, 'provider' => 'meta', 'metric_key' => 'meta_selected_adaccount'],
-                    ['metric_value' => 'act_simulacion', 'recorded_at' => now()]
-                );
-                MetricsCache::updateOrCreate(
-                    ['user_id' => $user->id, 'provider' => 'meta', 'metric_key' => 'meta_adaccount_name'],
-                    ['metric_value' => 'Naverys Demo (Simulado)', 'recorded_at' => now()]
-                );
-                MetricsCache::updateOrCreate(
-                    ['user_id' => $user->id, 'provider' => 'meta', 'metric_key' => 'advertising_performance'],
-                    ['metric_value' => json_encode([
-                        'spend' => 1250.75,
-                        'impressions' => 148500,
-                        'clicks' => 3840,
-                        'cpc' => 0.32,
-                        'cpm' => 8.42,
-                        'leads' => 412
-                    ]), 'recorded_at' => now()]
-                );
-                return;
-            } else {
-                $adAccountId = $adAccountCache->metric_value;
-            }
+            $adAccountId = $adAccountCache?->metric_value;
 
             if (!$adAccountId) {
                 return;

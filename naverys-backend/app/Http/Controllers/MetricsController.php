@@ -8,6 +8,7 @@ use App\Actions\Metrics\GetDashboardMetricsAction;
 use App\Actions\Metrics\SyncGoogleMetricsAction;
 use App\Actions\Metrics\SyncPageSpeedMetricsAction;
 use App\Actions\Metrics\SyncMetaMetricsAction;
+use App\Actions\Metrics\SyncSearchConsoleMetricsAction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -18,6 +19,7 @@ class MetricsController extends Controller
         private readonly SyncGoogleMetricsAction $syncGoogleMetricsAction,
         private readonly SyncPageSpeedMetricsAction $syncPageSpeedMetricsAction,
         private readonly SyncMetaMetricsAction $syncMetaMetricsAction,
+        private readonly SyncSearchConsoleMetricsAction $syncSearchConsoleMetricsAction,
     ) {
     }
 
@@ -31,6 +33,7 @@ class MetricsController extends Controller
         try {
             $this->syncGoogleMetricsAction->execute($request->user());
             $this->syncMetaMetricsAction->execute($request->user());
+            $this->syncSearchConsoleMetricsAction->execute($request->user());
             
             $propNameCache = \App\Models\MetricsCache::where('user_id', $request->user()->id)
                 ->where('provider', 'google')

@@ -95,6 +95,13 @@ class GetDashboardMetricsAction
             $metaPayload['account_name'] = $metaAdAccountNameCache ? $metaAdAccountNameCache->metric_value : 'Ad Account';
         }
 
+        $seoCache = MetricsCache::where('user_id', $user->id)
+            ->where('provider', 'google')
+            ->where('metric_key', 'seo_performance')
+            ->first();
+            
+        $seoPayload = $seoCache ? json_decode($seoCache->metric_value, true) : null;
+
         if (!$metrics) {
             return [
                 'propertyName' => $propNameCache ? $propNameCache->metric_value : null,
@@ -106,6 +113,7 @@ class GetDashboardMetricsAction
                 'timeline' => $timeline,
                 'pagespeed' => $pageSpeedData,
                 'meta' => $metaPayload,
+                'seo' => $seoPayload,
                 'connected' => $isConnected,
                 'last_updated' => null,
             ];
@@ -123,6 +131,7 @@ class GetDashboardMetricsAction
             'timeline' => $timeline,
             'pagespeed' => $pageSpeedData,
             'meta' => $metaPayload,
+            'seo' => $seoPayload,
             'connected' => true,
             'last_updated' => $metrics->recorded_at,
         ];

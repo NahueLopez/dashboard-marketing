@@ -9,6 +9,7 @@ use App\Actions\OAuth\GetUserConnectedAccountsAction;
 use App\Actions\OAuth\HandleOAuthCallbackAction;
 use App\Models\MetricsCache;
 use App\Services\GoogleAnalyticsService;
+use App\Services\MetaAdsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -57,6 +58,26 @@ class OAuthController extends Controller
         MetricsCache::updateOrCreate(
             ['user_id' => $uid, 'provider' => 'google', 'metric_key' => 'ga4_property_name'], 
             ['metric_value' => $request->input('property_name'), 'recorded_at' => now()]
+        );
+        return response()->json(['success' => true]);
+    }
+
+    public function adAccounts(Request $request, MetaAdsService $service): JsonResponse {
+        $account = $request->user()->connectedAccounts()->where('provider','meta')->first();
+        if(!$account) return response()->json([]);
+        return response()->json($service->getAllAdAccounts($account));
+    }
+
+    public function selectAdAccount(Request $request): JsonResponse {
+        $request->validate(['adaccount_id' => 'required', 'adaccount_name' => 'required']);
+        $uid = $request->user()->id;
+        MetricsCache::updateOrCreate(
+            ['user_id' => $uid, 'provider' => 'meta', 'metric_key' => 'meta_selected_adaccount'], 
+            ['metric_value' => $request->input('adaccount_id'), 'recorded_at' => now()]
+        );
+        MetricsCache::updateOrCreate(
+            ['user_id' => $uid, 'provider' => 'meta', 'metric_key' => 'meta_adaccount_name'], 
+            ['metric_value' => $request->input('adaccount_name'), 'recorded_at' => now()]
         );
         return response()->json(['success' => true]);
     }

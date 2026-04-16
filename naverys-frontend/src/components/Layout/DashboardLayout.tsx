@@ -14,8 +14,11 @@ interface Props {
 export function DashboardLayout({ children, handleLogout }: Props) {
     const { metrics, forceSync, syncing } = useMetrics();
     const [properties, setProperties] = useState<{ id: string, name: string }[]>([]);
+    const [adAccounts, setAdAccounts] = useState<{ id: string, name: string, status: number }[]>([]);
     const [showDropdown, setShowDropdown] = useState(false);
+    const [showAdDropdown, setShowAdDropdown] = useState(false);
     const [switching, setSwitching] = useState(false);
+    const [switchingAd, setSwitchingAd] = useState(false);
 
     useEffect(() => {
         if (metrics.connected) {
@@ -25,7 +28,14 @@ export function DashboardLayout({ children, handleLogout }: Props) {
                     if (Array.isArray(data)) setProperties(data);
                 });
         }
-    }, [metrics.connected]);
+        if (metrics.meta) {
+            apiFetch('/api/oauth/meta/adaccounts', { method: 'GET' })
+                .then(res => res.json())
+                .then(data => {
+                    if (Array.isArray(data)) setAdAccounts(data);
+                });
+        }
+    }, [metrics.connected, metrics.meta]);
 
     const handleSelectProperty = async (propId: string, propName: string) => {
         setShowDropdown(false);
@@ -36,6 +46,17 @@ export function DashboardLayout({ children, handleLogout }: Props) {
         });
         await forceSync();
         setSwitching(false);
+    };
+
+    const handleSelectAdAccount = async (adId: string, adName: string) => {
+        setShowAdDropdown(false);
+        setSwitchingAd(true);
+        await apiFetch('/api/oauth/meta/adaccounts', {
+            method: 'POST',
+            body: JSON.stringify({ adaccount_id: adId, adaccount_name: adName })
+        });
+        await forceSync();
+        setSwitchingAd(false);
     };
 
     return (
@@ -49,19 +70,19 @@ export function DashboardLayout({ children, handleLogout }: Props) {
                         {metrics.connected && metrics.propertyName ? (
                             <div className="relative">
                                 <button
-                                    onClick={() => setShowDropdown(!showDropdown)}
+                                    onClick={() => { setShowDropdown(!showDropdown); setShowAdDropdown(false); }}
                                     disabled={switching || syncing}
                                     className="flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-lg bg-blue-50/80 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-400 border border-blue-200/50 dark:border-blue-800/50 transition-colors"
                                 >
                                     <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
-                                    {switching ? 'Cambiando origen...' : metrics.propertyName}
+                                    <span className="max-w-[120px] truncate">{switching ? 'Cambiando...' : metrics.propertyName}</span>
                                     <ChevronDown size={14} className={showDropdown ? "rotate-180 transition-transform" : "transition-transform"} />
                                 </button>
 
                                 {showDropdown && properties.length > 0 && (
                                     <div className="absolute top-12 left-0 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-2xl rounded-xl py-2 w-72 backdrop-blur-xl">
                                         <div className="px-4 py-3 text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-zinc-800/50 flex items-center justify-between">
-                                            Orígenes de Datos
+                                            Orígenes de Analytics
                                             <span className="bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded text-[10px]">{properties.length}</span>
                                         </div>
                                         <div className="max-h-[60vh] overflow-y-auto p-1 custom-scrollbar">
@@ -80,7 +101,45 @@ export function DashboardLayout({ children, handleLogout }: Props) {
                                 )}
                             </div>
                         ) : (
-                            <span className="px-2">Sincronización Inactiva</span>
+                            <span className="px-2"></span>
+                        )}
+
+                        {metrics.meta && metrics.meta.account_name && (
+                            <div className="relative ml-2">
+                                <button
+                                    onClick={() => { setShowAdDropdown(!showAdDropdown); setShowDropdown(false); }}
+                                    disabled={switchingAd || syncing}
+                                    className="flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-lg bg-pink-50/80 hover:bg-pink-100 dark:bg-pink-900/30 dark:hover:bg-pink-900/50 text-pink-700 dark:text-pink-400 border border-pink-200/50 dark:border-pink-800/50 transition-colors"
+                                >
+                                    <div className="w-2 h-2 rounded-full bg-pink-500 animate-pulse"></div>
+                                    <span className="max-w-[120px] truncate">{switchingAd ? 'Cambiando...' : metrics.meta.account_name}</span>
+                                    <ChevronDown size={14} className={showAdDropdown ? "rotate-180 transition-transform" : "transition-transform"} />
+                                </button>
+
+                                {showAdDropdown && adAccounts.length > 0 && (
+                                    <div className="absolute top-12 left-0 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-2xl rounded-xl py-2 w-72 backdrop-blur-xl">
+                                        <div className="px-4 py-3 text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-zinc-800/50 flex items-center justify-between">
+                                            Cuentas Publicitarias
+                                            <span className="bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded text-[10px]">{adAccounts.length}</span>
+                                        </div>
+                                        <div className="max-h-[60vh] overflow-y-auto p-1 custom-scrollbar">
+                                            {adAccounts.map(a => (
+                                                <button
+                                                    key={a.id}
+                                                    onClick={() => handleSelectAdAccount(a.id, a.name)}
+                                                    className={`w-full text-left flex items-center justify-between px-4 py-2.5 rounded-lg text-sm transition-all duration-200 mb-1 ${metrics.meta?.account_name === a.name ? 'bg-pink-50 dark:bg-pink-900/20 text-pink-700 dark:text-pink-400 font-bold' : 'hover:bg-slate-50 dark:hover:bg-zinc-800/50 text-slate-700 dark:text-slate-300 font-medium'}`}
+                                                >
+                                                    <span className="truncate pr-4 flex items-center gap-2">
+                                                        <span className={`w-1.5 h-1.5 rounded-full ${a.status === 1 ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                                                        {a.name}
+                                                    </span>
+                                                    {metrics.meta?.account_name === a.name && <Check size={16} className="text-pink-500 shrink-0" strokeWidth={3} />}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         )}
                     </div>
                     <div className="flex items-center gap-4">

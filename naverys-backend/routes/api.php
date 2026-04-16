@@ -26,6 +26,8 @@ Route::middleware(['auth:sanctum'])->prefix('oauth')->group(function (): void {
     Route::get('/accounts', [OAuthController::class, 'accounts']);
     Route::get('/google/properties', [OAuthController::class, 'properties']);
     Route::post('/google/properties', [OAuthController::class, 'selectProperty']);
+    Route::get('/meta/adaccounts', [OAuthController::class, 'adAccounts']);
+    Route::post('/meta/adaccounts', [OAuthController::class, 'selectAdAccount']);
     Route::get('/{provider}/redirect', [OAuthController::class, 'redirect']);
 });
 

@@ -31,38 +31,17 @@ class MetricsController extends Controller
     public function forceSync(Request $request): JsonResponse
     {
         try {
-            $this->syncGoogleMetricsAction->execute($request->user());
-            $this->syncMetaMetricsAction->execute($request->user());
-            $this->syncSearchConsoleMetricsAction->execute($request->user());
-            
-            $propNameCache = \App\Models\MetricsCache::where('user_id', $request->user()->id)
-                ->where('provider', 'google')
-                ->where('metric_key', 'ga4_property_name')
-                ->first();
-                
-            $propName = $propNameCache ? $propNameCache->metric_value : 'default';
+            \App\Jobs\SyncAllUserMetricsJob::dispatch($request->user());
 
-            $targetUrlCache = \App\Models\MetricsCache::where('user_id', $request->user()->id)
-                ->where('provider', 'google')
-                ->where('metric_key', 'pagespeed_url_' . $propName)
-                ->first();
-
-            // Legacy bridge handler
-            if (!$targetUrlCache) {
-                $legacyCache = \App\Models\MetricsCache::where('user_id', $request->user()->id)
-                    ->where('provider', 'google')
-                    ->where('metric_key', 'pagespeed_target_url')
-                    ->first();
-                if ($legacyCache) $targetUrlCache = $legacyCache;
-            }
-
-            if ($targetUrlCache) {
-                $this->syncPageSpeedMetricsAction->execute($request->user(), $targetUrlCache->metric_value);
-            }
-
-            return response()->json(['success' => true]);
+            return response()->json([
+                'success' => true, 
+                'message' => 'Sincronización encolada. Demorará unos segundos en actualizarse.'
+            ]);
         } catch (\Throwable $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            \Illuminate\Support\Facades\Log::error("Fallo al encolar SyncAllUserMetricsJob: " . $e->getMessage());
+            return response()->json([
+                'error' => 'No se pudo iniciar la sincronización en este momento.'
+            ], 422);
         }
     }
 

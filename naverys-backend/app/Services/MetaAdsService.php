@@ -15,7 +15,7 @@ class MetaAdsService
 
     public function getAllAdAccounts(ConnectedAccount $account): array
     {
-        $response = Http::get(self::GRAPH_API_URL . '/me/adaccounts', [
+        $response = Http::timeout(10)->get(self::GRAPH_API_URL . '/me/adaccounts', [
             'fields' => 'name,account_id,account_status',
             'access_token' => $account->access_token,
         ]);
@@ -43,7 +43,7 @@ class MetaAdsService
         // Account ID passed to graph API needs 'act_' prefix if not already present
         $actId = str_starts_with($accountId, 'act_') ? $accountId : 'act_' . $accountId;
 
-        $response = Http::get(self::GRAPH_API_URL . "/{$actId}/insights", [
+        $response = Http::timeout(10)->get(self::GRAPH_API_URL . "/{$actId}/insights", [
             'level' => 'account',
             'fields' => 'spend,impressions,clicks,cpc,cpm,actions',
             'date_preset' => $datePreset,

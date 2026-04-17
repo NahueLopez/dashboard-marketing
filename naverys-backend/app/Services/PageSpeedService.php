@@ -19,12 +19,12 @@ class PageSpeedService
         $queryStringMobile = http_build_query(['url' => $url, 'strategy' => 'mobile']) . '&category=performance&category=accessibility&category=best-practices&category=seo';
         $queryStringDesktop = http_build_query(['url' => $url, 'strategy' => 'desktop']) . '&category=performance&category=accessibility&category=best-practices&category=seo';
 
-        $mobileResponse = Http::timeout(60)->get(self::API_URL . '?' . $queryStringMobile);
+        $mobileResponse = Http::timeout(10)->get(self::API_URL . '?' . $queryStringMobile);
         
         // Wait 1 second to not trigger 429 Too Many Requests
         sleep(1);
         
-        $desktopResponse = Http::timeout(60)->get(self::API_URL . '?' . $queryStringDesktop);
+        $desktopResponse = Http::timeout(10)->get(self::API_URL . '?' . $queryStringDesktop);
 
         if (!$mobileResponse->successful() || !$desktopResponse->successful()) {
             \Illuminate\Support\Facades\Log::info("Rate limit hit, falling back to simulated Dual Metrics for UI showcase.");

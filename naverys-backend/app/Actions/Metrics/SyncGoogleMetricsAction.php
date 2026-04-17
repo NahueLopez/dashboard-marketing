@@ -56,11 +56,15 @@ class SyncGoogleMetricsAction
 
             $data = $this->googleAnalyticsService->getVisitsAndSessions($account, $propId);
 
-            // Intentar parsear las filas que devuelve GA4
-            $sessions = $data['rows'][0]['metricValues'][0]['value'] ?? 0;
-            $users = $data['rows'][0]['metricValues'][1]['value'] ?? 0;
-            $newUsers = $data['rows'][0]['metricValues'][2]['value'] ?? 0;
-            $pageViews = $data['rows'][0]['metricValues'][3]['value'] ?? 0;
+            $rows = $data['rows'] ?? [];
+            if (empty($rows)) {
+                $sessions = $users = $newUsers = $pageViews = 0;
+            } else {
+                $sessions = $rows[0]['metricValues'][0]['value'] ?? 0;
+                $users = $rows[0]['metricValues'][1]['value'] ?? 0;
+                $newUsers = $rows[0]['metricValues'][2]['value'] ?? 0;
+                $pageViews = $rows[0]['metricValues'][3]['value'] ?? 0;
+            }
 
             MetricsCache::updateOrCreate(
                 [

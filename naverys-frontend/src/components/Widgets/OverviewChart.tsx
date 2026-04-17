@@ -1,10 +1,11 @@
+import { memo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface Props {
-    data: Array<{name: string, sessions: number, users: number}>
+    data: Array<{ name: string, sessions: number, users: number }>
 }
 
-export function OverviewChart({ data }: Props) {
+export const OverviewChart = memo(function OverviewChart({ data }: Props) {
     return (
         <div className="bg-white dark:bg-[#111111] border border-slate-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm mt-6 hover:border-blue-500/30 dark:hover:border-zinc-600 transition-colors duration-300">
             <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-6">Tráfico Semanal de la Propiedad</h3>
@@ -29,5 +30,5 @@ export function OverviewChart({ data }: Props) {
                 </ResponsiveContainer>
             </div>
         </div>
-    )
-}
+    );
+});

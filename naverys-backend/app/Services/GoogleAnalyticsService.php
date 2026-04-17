@@ -16,12 +16,12 @@ class GoogleAnalyticsService
 
     public function getFirstPropertyId(ConnectedAccount $account): ?array
     {
-        $response = Http::withToken($account->access_token)
+        $response = Http::timeout(10)->withToken($account->access_token)
             ->get(self::ADMIN_API_URL . '/accountSummaries');
 
         if ($response->status() === 401) {
             $this->refreshToken($account);
-            $response = Http::withToken($account->access_token)
+            $response = Http::timeout(10)->withToken($account->access_token)
                 ->get(self::ADMIN_API_URL . '/accountSummaries');
         }
 
@@ -47,11 +47,11 @@ class GoogleAnalyticsService
 
     public function getAllProperties(ConnectedAccount $account): array
     {
-        $response = Http::withToken($account->access_token)->get(self::ADMIN_API_URL . '/accountSummaries');
+        $response = Http::timeout(10)->withToken($account->access_token)->get(self::ADMIN_API_URL . '/accountSummaries');
 
         if ($response->status() === 401) {
             $this->refreshToken($account);
-            $response = Http::withToken($account->access_token)->get(self::ADMIN_API_URL . '/accountSummaries');
+            $response = Http::timeout(10)->withToken($account->access_token)->get(self::ADMIN_API_URL . '/accountSummaries');
         }
 
         if (!$response->successful()) { return []; }
@@ -112,7 +112,7 @@ class GoogleAnalyticsService
     private function makeRequest(ConnectedAccount $account, string $propertyId, string $startDate, string $endDate)
     {
         // Petición nativa a la Data API de GA4 usando Http Client
-        return Http::withToken($account->access_token)
+        return Http::timeout(10)->withToken($account->access_token)
             ->post(self::BASE_URL . "/properties/{$propertyId}:runReport", [
                 'dateRanges' => [
                     ['startDate' => $startDate, 'endDate' => $endDate],
@@ -128,7 +128,7 @@ class GoogleAnalyticsService
 
     private function makeTimelineRequest(ConnectedAccount $account, string $propertyId, string $startDate, string $endDate)
     {
-        return Http::withToken($account->access_token)
+        return Http::timeout(10)->withToken($account->access_token)
             ->post(self::BASE_URL . "/properties/{$propertyId}:runReport", [
                 'dateRanges' => [
                     ['startDate' => $startDate, 'endDate' => $endDate],
@@ -149,7 +149,7 @@ class GoogleAnalyticsService
             throw new Exception("No hay refresh_token guardado para el usuario ID {$account->user_id}. El usuario debe volver a hacer login.");
         }
 
-        $response = Http::post('https://oauth2.googleapis.com/token', [
+        $response = Http::timeout(10)->post('https://oauth2.googleapis.com/token', [
             'client_id' => config('services.google.client_id'),
             'client_secret' => config('services.google.client_secret'),
             'refresh_token' => $account->refresh_token,

@@ -45,7 +45,12 @@ class OAuthController extends Controller
     public function properties(Request $request, GoogleAnalyticsService $service): JsonResponse {
         $account = $request->user()->connectedAccounts()->where('provider','google')->first();
         if(!$account) return response()->json([]);
-        return response()->json($service->getAllProperties($account));
+
+        $properties = \Illuminate\Support\Facades\Cache::remember("google_properties_user_{$request->user()->id}", 86400, function() use ($service, $account) {
+            return $service->getAllProperties($account);
+        });
+
+        return response()->json($properties);
     }
 
     public function selectProperty(Request $request): JsonResponse {
@@ -65,7 +70,12 @@ class OAuthController extends Controller
     public function adAccounts(Request $request, MetaAdsService $service): JsonResponse {
         $account = $request->user()->connectedAccounts()->where('provider','meta')->first();
         if(!$account) return response()->json([]);
-        return response()->json($service->getAllAdAccounts($account));
+
+        $adAccounts = \Illuminate\Support\Facades\Cache::remember("meta_adaccounts_user_{$request->user()->id}", 86400, function() use ($service, $account) {
+            return $service->getAllAdAccounts($account);
+        });
+
+        return response()->json($adAccounts);
     }
 
     public function selectAdAccount(Request $request): JsonResponse {

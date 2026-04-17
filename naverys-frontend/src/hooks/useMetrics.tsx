@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext } from 'react';
+import { useState, useEffect, createContext, useContext, useCallback, useMemo } from 'react';
 import type { ReactNode } from 'react';
 import { apiFetch } from '../App';
 
@@ -62,7 +62,7 @@ export function MetricsProvider({ children }: { children: ReactNode }) {
     const [loading, setLoading] = useState(true);
     const [syncing, setSyncing] = useState(false);
 
-    const fetchMetrics = async (isBackgroundSync = false) => {
+    const fetchMetrics = useCallback(async (isBackgroundSync = false) => {
         try {
             if (!isBackgroundSync) setLoading(true);
             const response = await apiFetch('/api/auth/metrics', { method: 'GET' });
@@ -75,9 +75,9 @@ export function MetricsProvider({ children }: { children: ReactNode }) {
         } finally {
             if (!isBackgroundSync) setLoading(false);
         }
-    };
+    }, []);
 
-    const forceSync = async () => {
+    const forceSync = useCallback(async () => {
         try {
             setSyncing(true);
             const response = await apiFetch('/api/auth/metrics/sync', { method: 'POST' });
@@ -89,13 +89,13 @@ export function MetricsProvider({ children }: { children: ReactNode }) {
         } finally {
             setSyncing(false);
         }
-    };
+    }, [fetchMetrics]);
 
     useEffect(() => {
         void fetchMetrics();
-    }, []);
+    }, [fetchMetrics]);
 
-    const syncPageSpeed = async (url: string) => {
+    const syncPageSpeed = useCallback(async (url: string) => {
         try {
             setSyncing(true);
             const response = await apiFetch('/api/auth/metrics/pagespeed', {
@@ -114,11 +114,14 @@ export function MetricsProvider({ children }: { children: ReactNode }) {
         } finally {
             setSyncing(false);
         }
-    };
+    }, [fetchMetrics]);
+
+    const contextValue = useMemo(() => ({
+        metrics, loading, syncing, forceSync, syncPageSpeed
+    }), [metrics, loading, syncing, forceSync, syncPageSpeed]);
 
     return (
-        <MetricsContext.Provider value={{ metrics, loading, syncing, forceSync, syncPageSpeed }
-        }>
+        <MetricsContext.Provider value={contextValue}>
             {children}
         </MetricsContext.Provider>
     );

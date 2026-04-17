@@ -8,15 +8,17 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function (): void {
     Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
 
     Route::middleware('auth:sanctum')->group(function (): void {
         Route::get('/user', [AuthController::class, 'user']);
         Route::post('/logout', [AuthController::class, 'logout']);
         
         Route::get('/metrics', [\App\Http\Controllers\MetricsController::class, 'index']);
-        Route::post('/metrics/sync', [\App\Http\Controllers\MetricsController::class, 'forceSync']);
-        Route::post('/metrics/pagespeed', [\App\Http\Controllers\MetricsController::class, 'syncPageSpeed']);
+        Route::post('/metrics/sync', [\App\Http\Controllers\MetricsController::class, 'forceSync'])
+            ->middleware('throttle:sync-metrics');
+        Route::post('/metrics/pagespeed', [\App\Http\Controllers\MetricsController::class, 'syncPageSpeed'])
+            ->middleware('throttle:sync-metrics');
     });
 });
 
